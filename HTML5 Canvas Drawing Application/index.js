@@ -51,9 +51,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function eraser(e) {
-        //WRITE YOUR CODE HERE
         ctx.strokeStyle = "#fff";
-        ctx.lineWidth = brushWidth * 2;
+        ctx.lineWidth = brushWidth * 5;
 
         ctx.lineTo(e.offsetX, e.offsetY);
         ctx.stroke();
@@ -62,7 +61,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function drawRectangle(e) {
         //WRITE YOUR CODE HERE
-
 
         if (fillShapes) {
             //WRITE YOUR CODE HERE
@@ -95,12 +93,6 @@ document.addEventListener("DOMContentLoaded", function () {
         ctx.lineTo(e.offsetX, e.offsetY); //2nd point
         ctx.lineTo(2 * prevMouseX - e.offsetX, e.offsetY); //3rd point -> mirror of 2nd
         ctx.closePath(); //connects top
-
-        // only create equilateral triangle
-        // sides = 3;
-        // radius = calcRadius(e.offsetX, e.offsetY);
-        // drawPolygon(3, radius);
-
 
         if (fillShapes) {
             //WRITE YOUR CODE HERE
@@ -173,40 +165,38 @@ document.addEventListener("DOMContentLoaded", function () {
     function drawHeart(e) {
         ctx.beginPath();
 
-        let x = prevMouseX;
-        let y = prevMouseY;
         let width = e.offsetX - prevMouseX;
         let height = e.offsetY - prevMouseY;
         let topCurveHeight = height * 0.2;
-      
-        ctx.moveTo(x, y + topCurveHeight); // Start at the bottom of the top curve
-      
+
+        ctx.moveTo(prevMouseX, prevMouseY + topCurveHeight); // bottom tip
+
         // Left top curve
         ctx.bezierCurveTo(
-          x - width * 0.2, y - topCurveHeight,  // point 1
-          x - width, y + topCurveHeight * 0.9, // point 2
-          x, y + height // Endpoint
+            prevMouseX - width * 0.2, prevMouseY - topCurveHeight,  // point 1
+            prevMouseX - width, prevMouseY + topCurveHeight * 0.9, // point 2
+            prevMouseX, prevMouseY + height // connect to bottom tip
         );
-      
+
         // Right top curve
         ctx.bezierCurveTo(
-          x + width, y + topCurveHeight * 0.9, // point 1
-          x + width * 0.2, y - topCurveHeight, // point 2
-          x, y + topCurveHeight // Endpoint
+            prevMouseX + width, prevMouseY + topCurveHeight * 0.9, // point 1
+            prevMouseX + width * 0.2, prevMouseY - topCurveHeight, // point 2
+            prevMouseX, prevMouseY + topCurveHeight // connect to top
         );
-      
-        ctx.closePath();
-      
-        if (fillShapes) {
-          ctx.fill();
-        } else {
-          ctx.stroke();
-        }
-      }
 
-    function drawStar(e) { }
+        ctx.closePath();
+
+        if (fillShapes) {
+            ctx.fill();
+        } else {
+            ctx.stroke();
+        }
+    }
 
     //TODO: implement drawStar function
+    // function drawStar(e) { }
+
     function startDraw(e) {
         isDrawing = true;
         prevMouseX = e.offsetX;
@@ -281,6 +271,17 @@ document.addEventListener("DOMContentLoaded", function () {
         setCanvasBackground();
     }
 
+    //added save feature
+    function save() {
+        let format = prompt("Enter format: png or jpg", "png"); 
+        if (format !== "png" && format !== "jpg") return; 
+
+        let link = document.createElement("a");
+        link.href = canvas.toDataURL("image/" + format);
+        link.download = "drawing." + format;
+        link.click();
+    }
+
     function handleFillShapesChange() {
         fillShapes = document.querySelector("#fill-shapes").checked;
     }
@@ -297,6 +298,10 @@ document.addEventListener("DOMContentLoaded", function () {
     document
         .querySelector(".clear-canvas")
         .addEventListener("click", handleClearCanvas);
+    //for save feature
+    document
+        .querySelector(".save")
+        .addEventListener("click", save);
     document
         .querySelector("#fill-shapes")
         .addEventListener("change", handleFillShapesChange);

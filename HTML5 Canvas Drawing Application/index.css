@@ -84,6 +84,8 @@ body {
   }
   
   .buttons .clear-canvas {
+    position: relative;
+    top: 30px;
     color: black;
     border: 1px solid #9fc39f;
     transition: all 0.2s ease;
@@ -92,6 +94,19 @@ body {
   }
   
   .clear-canvas:hover {
+    color: #fff;
+    background: #6c757d;
+  }
+
+  .buttons .save {
+    color: black;
+    border: 1px solid #9fc39f;
+    transition: all 0.2s ease;
+    border: 2px solid black;
+    font-size: 13px;
+  }
+  
+  .save:hover {
     color: #fff;
     background: #6c757d;
   }
