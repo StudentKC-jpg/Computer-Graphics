@@ -7,8 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
         isDrawing = false,
         selectedTool = "pen",
         brushWidth = 5;
-        radius = 0; //added radius of shape 
-        sides = 0; //added sides of shape
+    radius = 0; //added radius of shape 
+    sides = 0; //added sides of shape
     let fillShapes = false;
 
 
@@ -24,20 +24,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     //added radius calculated by distance formula
-    function calcRadius(x, y){
-        return Math.sqrt(Math.pow(x - prevMouseX,2) + Math.pow(y - prevMouseY, 2));
+    function calcRadius(x, y) {
+        return Math.sqrt(Math.pow(x - prevMouseX, 2) + Math.pow(y - prevMouseY, 2));
     }
 
-    function drawPolygon(numOfSides, radius){
+    //function draw shapes based on number of sides and radius
+    function drawPolygon(numOfSides, radius) {
         ctx.beginPath();
-        for (let i = 0; i <= numOfSides; i++){
+        for (let i = 0; i <= numOfSides; i++) {
             let angle = (i * 2 * Math.PI) / numOfSides - Math.PI / 2; // angle of points equally spaced
             let x = prevMouseX + radius * Math.cos(angle); // x
             let y = prevMouseY + radius * Math.sin(angle); // y
-            
-            if(i == 0){
+
+            if (i == 0) {
                 ctx.moveTo(x, y); // first point
-            } else{
+            } else {
                 ctx.lineTo(x, y); // next points
             }
         }
@@ -51,14 +52,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function eraser(e) {
         //WRITE YOUR CODE HERE
-        
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = brushWidth * 2;
+
         ctx.lineTo(e.offsetX, e.offsetY);
         ctx.stroke();
+
     }
 
     function drawRectangle(e) {
         //WRITE YOUR CODE HERE
-        
+
 
         if (fillShapes) {
             //WRITE YOUR CODE HERE
@@ -86,15 +90,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function drawTriangle(e) {
         //WRITE YOUR CODE HERE
-        // ctx.beginPath();
-        // ctx.moveTo(prevMouseX, prevMouseY); //top
-        // ctx.lineTo(e.offsetX, e.offsetY); //2nd point
-        // ctx.lineTo(2 * prevMouseX - e.offsetX, e.offsetY); //3rd point -> mirror of 2nd
-        // ctx.closePath(); //connects top
+        ctx.beginPath();
+        ctx.moveTo(prevMouseX, prevMouseY); //top
+        ctx.lineTo(e.offsetX, e.offsetY); //2nd point
+        ctx.lineTo(2 * prevMouseX - e.offsetX, e.offsetY); //3rd point -> mirror of 2nd
+        ctx.closePath(); //connects top
 
-        sides = 3;
-        radius = calcRadius(e.offsetX, e.offsetY);
-        drawPolygon(3, radius);
+        // only create equilateral triangle
+        // sides = 3;
+        // radius = calcRadius(e.offsetX, e.offsetY);
+        // drawPolygon(3, radius);
 
 
         if (fillShapes) {
@@ -111,18 +116,6 @@ document.addEventListener("DOMContentLoaded", function () {
         radius = calcRadius(e.offsetX, e.offsetY);
         sides = 5;
         drawPolygon(sides, radius);
-
-        // for (let i = 0; i <= sides; i++){
-        //     let angle = (i * 2 * Math.PI) / sides - Math.PI / 2; // angle of points equally spaced
-        //     let x = prevMouseX + radius * Math.cos(angle); // x
-        //     let y = prevMouseY + radius * Math.sin(angle); // y
-            
-        //     if(i == 0){
-        //         ctx.moveTo(x, y); // first point
-        //     } else{
-        //         ctx.lineTo(x, y); // next points
-        //     }
-        // }
 
         if (fillShapes) {
             //WRITE YOUR CODE HERE
@@ -163,6 +156,57 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function drawDiamond(e) {
+        radius = calcRadius(e.offsetX, e.offsetY);
+        sides = 4;
+        drawPolygon(sides, radius);
+
+        if (fillShapes) {
+            //WRITE YOUR CODE HERE
+            ctx.fill();
+        } else {
+            //WRITE YOUR CODE HERE
+            ctx.stroke();
+        }
+    }
+
+    function drawHeart(e) {
+        ctx.beginPath();
+
+        let x = prevMouseX;
+        let y = prevMouseY;
+        let width = e.offsetX - prevMouseX;
+        let height = e.offsetY - prevMouseY;
+        let topCurveHeight = height * 0.2;
+      
+        ctx.moveTo(x, y + topCurveHeight); // Start at the bottom of the top curve
+      
+        // Left top curve
+        ctx.bezierCurveTo(
+          x - width * 0.2, y - topCurveHeight,  // point 1
+          x - width, y + topCurveHeight * 0.9, // point 2
+          x, y + height // Endpoint
+        );
+      
+        // Right top curve
+        ctx.bezierCurveTo(
+          x + width, y + topCurveHeight * 0.9, // point 1
+          x + width * 0.2, y - topCurveHeight, // point 2
+          x, y + topCurveHeight // Endpoint
+        );
+      
+        ctx.closePath();
+      
+        if (fillShapes) {
+          ctx.fill();
+        } else {
+          ctx.stroke();
+        }
+      }
+
+    function drawStar(e) { }
+
+    //TODO: implement drawStar function
     function startDraw(e) {
         isDrawing = true;
         prevMouseX = e.offsetX;
@@ -180,6 +224,10 @@ document.addEventListener("DOMContentLoaded", function () {
         switch (selectedTool) {
             case "pen":
                 drawPen(e);
+                break;
+            // added eraser
+            case "eraser":
+                eraser(e);
                 break;
             case "rectangle":
                 drawRectangle(e);
@@ -199,6 +247,14 @@ document.addEventListener("DOMContentLoaded", function () {
             case "octagon":
                 drawOctagon(e);
                 break;
+            //added diamond, heart
+            case "diamond":
+                drawDiamond(e);
+                break;
+            case "heart":
+                drawHeart(e);
+                break;
+            //!! add star
         }
     }
 
