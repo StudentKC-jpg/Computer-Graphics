@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function drawPolygon(numOfSides, radius) {
         ctx.beginPath();
         for (let i = 0; i <= numOfSides; i++) {
-            let angle = (i * 2 * Math.PI) / numOfSides - Math.PI / 2; // angle of points equally spaced
+            let angle = (i * 2 * Math.PI) / numOfSides; // angle of points equally spaced
             let x = prevMouseX + radius * Math.cos(angle); // x
             let y = prevMouseY + radius * Math.sin(angle); // y
 
