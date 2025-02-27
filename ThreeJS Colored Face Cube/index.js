@@ -7,7 +7,19 @@ document.body.appendChild(renderer.domElement);
 
 camera.position.z = 5;
 
-// CREATE YOUR CUBE HERE
+// Create a cube with six different colored faces
+const geometry = new THREE.BoxGeometry();
+const materials = [
+    new THREE.MeshBasicMaterial({ color: 0xff0000 }), // Red
+    new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // Green
+    new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Blue
+    new THREE.MeshBasicMaterial({ color: 0xffff00 }), // Yellow
+    new THREE.MeshBasicMaterial({ color: 0xff00ff }), // Magenta
+    new THREE.MeshBasicMaterial({ color: 0x00ffff })  // Cyan
+];
+
+const cube = new THREE.Mesh(geometry, materials);
+scene.add(cube);
 
 let wireframe = false;
 let angleX = 0; // Rotation around the X-axis
@@ -15,19 +27,47 @@ let angleY = 0; // Rotation around the Y-axis
 
 // Handle keyboard inputs
 function onKeyDown(event) {
-  // WRITE YOUR CODE HERE
+    switch (event.key) {
+        case "ArrowUp":
+            rotateCube("up");
+            break;
+        case "ArrowDown":
+            rotateCube("down");
+            break;
+        case "ArrowLeft":
+            rotateCube("left");
+            break;
+        case "ArrowRight":
+            rotateCube("right");
+            break;
+    }
 }
 
 window.addEventListener("keydown", onKeyDown);
 
 // Rotate the cube based on button clicks
 function rotateCube(direction) {
-  // WRITE YOUR CODE HERE
+    const rotationAmount = Math.PI / 8; // Adjust rotation speed
+    switch (direction) {
+        case "up":
+            angleX -= rotationAmount;
+            break;
+        case "down":
+            angleX += rotationAmount;
+            break;
+        case "left":
+            angleY -= rotationAmount;
+            break;
+        case "right":
+            angleY += rotationAmount;
+            break;
+    }
 }
 
 // Function to toggle wireframe
 function toggleWireframe() {
-  // WRITE YOUR CODE HERE
+    wireframe = !wireframe;
+    cube.material.forEach(material => material.wireframe = wireframe);
 }
 
 // Setup dat.GUI
@@ -41,13 +81,14 @@ gui.domElement.style.left = "10px"; // Align with left side
 
 // Set up a basic animation loop to render the scene
 function animate() {
-  requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
 
-  // Apply rotation to the cube
-  // WRITE YOUR CODE HERE
+    // Apply rotation to the cube
+    cube.rotation.x = angleX;
+    cube.rotation.y = angleY;
 
-  // Render the scene
-  renderer.render(scene, camera);
+    // Render the scene
+    renderer.render(scene, camera);
 }
 
 // Start the animation loop
