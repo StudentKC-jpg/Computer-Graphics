@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 ctx.lineTo(x, y); // next points
             }
         }
+        ctx.closePath();
     }
 
     function drawPen(e) {
