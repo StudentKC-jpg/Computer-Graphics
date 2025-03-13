@@ -1,24 +1,40 @@
+//new function variables
+let isFullscreen = false;
+
+let width = 500;
+let height = 400;
+
+
 // Create the scene
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(50, 500 / 400, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(500, 400);
+renderer.setSize(width, height);
 document.body.appendChild(renderer.domElement);
 
 camera.position.z = 5;
 
-// Create a cube with six different colored faces
-const geometry = new THREE.BoxGeometry();
-const materials = [
-    new THREE.MeshBasicMaterial({ color: 0xff0000 }), // Red
-    new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // Green
-    new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Blue
-    new THREE.MeshBasicMaterial({ color: 0xffff00 }), // Yellow
-    new THREE.MeshBasicMaterial({ color: 0xff00ff }), // Magenta
-    new THREE.MeshBasicMaterial({ color: 0x00ffff })  // Cyan
+const defaultColors = [
+  new THREE.Color(0xFF7F00), // Orange
+  new THREE.Color(0xFFFF00), // Yellow
+  new THREE.Color(0x00FF00), // Green
+  new THREE.Color(0x0000FF), // Blue
+  new THREE.Color(0x8B00FF), // Violet
+  new THREE.Color(0xFF0000)  // Red
 ];
 
-const cube = new THREE.Mesh(geometry, materials);
+
+// CREATE YOUR CUBE HERE
+var geometry = new THREE.BoxGeometry(1, 1, 1);
+var material = [
+  new THREE.MeshBasicMaterial({ color: defaultColors[0] }),
+  new THREE.MeshBasicMaterial({ color: defaultColors[1] }),
+  new THREE.MeshBasicMaterial({ color: defaultColors[2] }),
+  new THREE.MeshBasicMaterial({ color: defaultColors[3] }),
+  new THREE.MeshBasicMaterial({ color: defaultColors[4] }),
+  new THREE.MeshBasicMaterial({ color: defaultColors[5] }),
+];
+var cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
 let wireframe = false;
@@ -27,52 +43,97 @@ let angleY = 0; // Rotation around the Y-axis
 
 // Handle keyboard inputs
 function onKeyDown(event) {
-    switch (event.key) {
-        case "ArrowUp":
-            rotateCube("up");
-            break;
-        case "ArrowDown":
-            rotateCube("down");
-            break;
-        case "ArrowLeft":
-            rotateCube("left");
-            break;
-        case "ArrowRight":
-            rotateCube("right");
-            break;
-    }
+  // WRITE YOUR CODE HERE
+  switch (event.key) {
+    case "ArrowUp":
+      rotateCube("up");
+      break;
+    case "ArrowDown":
+      rotateCube("down");
+      break;
+    case "ArrowLeft":
+      rotateCube("left");
+      break;
+    case "ArrowRight":
+      rotateCube("right");
+  }
 }
 
 window.addEventListener("keydown", onKeyDown);
 
 // Rotate the cube based on button clicks
 function rotateCube(direction) {
-    const rotationAmount = Math.PI / 8; // Adjust rotation speed
-    switch (direction) {
-        case "up":
-            angleX -= rotationAmount;
-            break;
-        case "down":
-            angleX += rotationAmount;
-            break;
-        case "left":
-            angleY -= rotationAmount;
-            break;
-        case "right":
-            angleY += rotationAmount;
-            break;
-    }
+  // WRITE YOUR CODE HERE
+  switch (direction) {
+    case "up":
+      angleX = angleX - 0.1;
+      break;
+    case "down":
+      angleX = angleX + 0.1;
+      break;
+    case "left":
+      angleY = angleY - 0.1;
+      break;
+    case "right":
+      angleY = angleY + 0.1;
+      break;
+  }
 }
 
 // Function to toggle wireframe
 function toggleWireframe() {
-    wireframe = !wireframe;
-    cube.material.forEach(material => material.wireframe = wireframe);
+  // WRITE YOUR CODE HERE
+  wireframe = !wireframe;
+
+  for (let i = 0; i < 6; i++) {
+    cube.material[i].wireframe = wireframe;
+  }
+
+}
+
+
+//fullscreen button
+function toggleScreen() {
+  isFullscreen = !isFullscreen;
+
+  if (isFullscreen) {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    console.log("New Renderer Size:", renderer.getSize(new THREE.Vector2())); // Debugging
+    console.log("New Camera Aspect:", camera.aspect); // Debugging
+  } else {
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+
+    console.log("New Renderer Size:", renderer.getSize(new THREE.Vector2())); // Debugging
+    console.log("New Camera Aspect:", camera.aspect); // Debugging
+  }
+}
+
+
+document.getElementById("fullScreen").addEventListener("click", () => {
+  toggleScreen();
+});
+
+let orbital = false;
+let freeRotation = false;
+
+// function that moves cube with mouse
+function orbitalMovement() {
+}
+
+//function that moves cube without any user input
+function handsFreeRotation() {
 }
 
 // Setup dat.GUI
 const gui = new dat.GUI();
 gui.add({ wireframe: false }, "wireframe").onChange(toggleWireframe);
+gui.add({ orbital: false }, "orbital").onChange(orbitalMovement);
+gui.add({ freeRotation: false }, "freeRotation").onChange(handsFreeRotation);
 
 // Position the dat.GUI above the buttons
 gui.domElement.style.position = "absolute";
@@ -81,14 +142,19 @@ gui.domElement.style.left = "10px"; // Align with left side
 
 // Set up a basic animation loop to render the scene
 function animate() {
-    requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
 
-    // Apply rotation to the cube
-    cube.rotation.x = angleX;
-    cube.rotation.y = angleY;
+  // Apply rotation to the cube
+  // WRITE YOUR CODE HERE
+  if(orbital){
+    controls.update();
+  }
 
-    // Render the scene
-    renderer.render(scene, camera);
+  cube.rotation.x = angleX;
+  cube.rotation.y = angleY;
+
+  // Render the scene
+  renderer.render(scene, camera);
 }
 
 // Start the animation loop
